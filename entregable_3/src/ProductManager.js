@@ -4,7 +4,7 @@ class ProductManager {
   constructor(path) {
     this.path = path;
     this.products = [];
-    this.id = 10;
+    this.id = 11;
   }
 
   async addProducts({ title, description, price, thumbnail, code, stock, id }) {
@@ -52,7 +52,8 @@ class ProductManager {
 
   async getProducts() {
     try {
-      JSON.parse(await fs.promises.readFile(this.path, "utf-8"));
+      const data = JSON.parse(await fs.promises.readFile(this.path, "utf-8"));
+      return data;
     } catch (error) {
       console.log(error);
     }
@@ -62,9 +63,9 @@ class ProductManager {
     this.products = JSON.parse(await fs.promises.readFile(this.path, "utf-8"));
     const resultadoId = this.products.find((e) => e.id === id);
     if (resultadoId) {
-      return console.log(resultadoId);
+      return resultadoId;
     } else {
-      return console.log("Not found");
+      return { message: "Product Not Found" };
     }
   };
 
@@ -102,6 +103,5 @@ class ProductManager {
     }
   };
 }
-
 
 module.exports = ProductManager;
