@@ -1,91 +1,207 @@
 const fs = require("fs");
-const path = "../carro.json"
+
+const listaCarros1 = "../products/carrito.json";
+let listaCarros = [];
 
 class Carts {
   constructor() {
-    this.id = 3;
     this.products = [];
+    this.id = 1;
   }
-static getCartById(id){
-return 
-}
 
-
-
-  async addProducts({id, quantity}){
+  async createCart(id, products) {
+    id = this.id;
+    products = [];
     try {
-       this.products.push({
+      listaCarros.push({
         id,
-        quantity
-      })
+        products,
+      });
+      this.id = this.id + 1;
+      await fs.promises.writeFile(listaCarros1, JSON.stringify(listaCarros));
     } catch (error) {
-    console.log("🚀 ~ file: Carts.js:31 ~ Carts ~ addProducts ~ error", error)
+      console.log(
+        "🚀 ~ file: carros2.js:17 ~ Carts ~ createCart ~ error",
+        error
+      );
     }
   }
 
   getCartById = async (id) => {
     try {
-      const resultadoId = this.id.find((e) => e === id);
+      listaCarros = JSON.parse(
+        await fs.promises.readFile(listaCarros1, "utf-8")
+      );
+      const resultadoId = listaCarros.find((e) => e.id === id);
       if (resultadoId) {
-        return resultadoId;
-      } else {
-        return console.log("Not found");
-      }
-      
-    } catch (error) {
-      console.log("🚀 ~ file: Carts.js:27 ~ Carts ~ getCartById= ~ error", error)
-      
-    }
-  }
-
-  getProductById = async (id) => {
-    // this.products = JSON.parse(await fs.promises.readFile(this.path, "utf-8"));
-    try {
-      const resultadoId = this.products.find ((e) => e.id === id);
-      if (resultadoId) {
-        return resultadoId;
+        return console.log(resultadoId.products);
       } else {
         return console.log("Not found");
       }
     } catch (error) {
-      console.log("🚀 ~ file: Carts.js:31 ~ Carts ~ getProductById= ~ error", error)
-      
+      console.log(
+        "🚀 ~ file: carros2.js:31 ~ Carts ~ getCartById= ~ error",
+        error
+      );
     }
-
   };
+
+  // updateProductInCartById = async (id, data) => {
+  //   //falta buscar el id del producto a actualizar
+  //   try {
+  //     // let cartToUpdate = listaCarros.find((e) => e.id === id);
+  //     let productoIndex = listaCarros.findIndex((e) => e.id === id);
+  //     listaCarros[productoIndex].products = {
+  //       ...data,
+  //     };
+  //     await fs.promises.writeFile(listaCarros1, JSON.stringify(listaCarros));
+  //     console.log("Producto editado correctamente");
+  //   } catch (error) {
+  //     console.log(
+  //       "🚀 ~ file: carros2.js:45 ~ Carts ~ addProductToCartById= ~ error",
+  //       error
+  //     );
+  //   }
+  // };
+
+
+  addProductInCartById = async (id, {product, quantity = 1}) => {
+
+    try {
+
+      let listaCarros = JSON.parse( await fs.promises.readFile(listaCarros1, "utf-8"));
+
+      let cartToUpdate = listaCarros.find((e) => e.id === id);
+      
+      let prod = cartToUpdate.products.find((e)=> e.product === product)
+
+      if(!prod){
+      cartToUpdate.products.push({product, quantity})
+      await fs.promises.writeFile(listaCarros1, JSON.stringify(listaCarros));
+      console.log("Producto cargado correctamente");
+      }else if (prod){
+        let nuevaCantidad = prod.quantity + 1;
+        console.log("🚀 ~ file: Carts.js:84 ~ Carts ~ addProductInCartById= ~ nuevaCantidad", nuevaCantidad)
+        let posicion = cartToUpdate.products.indexOf(prod)
+        console.log("🚀 ~ file: Carts.js:85 ~ Carts ~ addProductInCartById= ~ posicion", posicion)
+
+        let edit = cartToUpdate.products.splice(posicion, 1, {product, quantity: Number(nuevaCantidad)})
+        console.log("🚀 ~ file: Carts.js:89 ~ Carts ~ addProductInCartById= ~ edit", edit)
+        await fs.promises.writeFile(listaCarros1, JSON.stringify(listaCarros));
+
+        console.log("Estamos acá!!!!!!!!!!!!!1")
+        console.log("🚀 ~ file: Carts.js:88 ~ Carts ~ addProductInCartById= ~ prod", prod)
+      }
+    } catch (error) {
+
+      console.log(
+        "🚀 ~ file: carros2.js:45 ~ Carts ~ addProductToCartById= ~ error",
+        error
+      );
+    }
+  };
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  // addProductInCartById = async (id, data) => {
+  //   try {
+  //     let cartToUpdate = listaCarros.find((e) => e.id === id);
+  //     cartToUpdate.products.push(data)
+  //     await fs.promises.writeFile(listaCarros1, JSON.stringify(listaCarros));
+  //     console.log("Producto cargado correctamente");
+  //   } catch (error) {
+  //     console.log(
+  //       "🚀 ~ file: carros2.js:45 ~ Carts ~ addProductToCartById= ~ error",
+  //       error
+  //     );
+  //   }
+  // };
 }
 
+const carritos = new Carts();
+
+// carritos.createCart();
+
+// // console.log(listaCarros);
+
+// carritos.createCart();
+
+// console.log("segundo carro", listaCarros);
+
+//carritos.getCartById(1)
+
+const producto1 = {
+  product: 125,
+  quantity: 2,
+};
+// carritos.updateProductInCartById(2, producto1);
+
+const producto2 = {
+  product: 300,
+  quantity: 6,
+};
+
+// carritos.updateProductInCartById(1, producto2);
+
+//carritos.getCartById(2)
+const producto3 = {
+  product: 600,
+};
+
+ //carritos.addProductInCartById(2, producto2);
+ carritos.addProductInCartById(2, producto3);
+
+
+// //
+
+// carritos.addProductInCartById(1, producto2);
 
 
 
 
-const carrito1 = new Carts()
-console.log("🚀 ~ file: Carts.js:17 ~ carrito1", carrito1)
+// carritos.addProductInCartById(2, producto3);
+// carritos.addProductInCartById(2, producto2);
 
-
-const prod1 = {
-  id:1,
-  quantity:3
-}
-
-// const prod2 = {
-//   id:6,
-//   quantity:2
-// }
-carrito1.addProducts(prod1)
-// carrito1.addProducts(prod2)
-
-console.log("🚀 ~ file: Carts.js:25 ~ carrito1", carrito1.products)
-
-
-// //  carrito1.getCartById(3)
-
-// // const carrito2 = new Carts(path)
-// // carrito2.addProducts(prod1)
-// // carrito2.addProducts(prod2)
-
-// // console.log("🚀 ~ file: Carts.js:35 ~ carrito2", carrito2.products)
-
-// console.log(carrito1.getProductById(6))
-
-// // carrito2.getProductById(8)
+//carritos.getCartById(2)
