@@ -7,8 +7,22 @@ class ProductManager {
     this.id = 10;
   }
 
-  async addProducts({ title, description, price, thumbnail, code, stock, id }) {
+
+  // async generateIndex(listaCarros) {
+  //   try {
+  //     if (listaCarros.length === 0) return 1;
+  //     return listaCarros[listaCarros.length - 1].id + 1;
+  //   } catch (error) {
+  //     console.log(
+  //       "🚀 ~ file: armyManager.js:17 ~ ArmyManager ~ generateIndex ~ error",
+  //       error
+  //     );
+  //   }
+  // }
+
+  async addProducts({ title, description, price, thumbnail, code, stock, id, status}) {
     id = this.id;
+    status = true;
     const verificarCode = this.products.some((product) => {
       return product.code === code;
     });
@@ -37,6 +51,7 @@ class ProductManager {
           thumbnail,
           code,
           stock,
+          status,
           id,
         });
 
@@ -104,4 +119,18 @@ class ProductManager {
 }
 
 
-module.exports = ProductManager;
+//module.exports = ProductManager;
+
+const nuevo = new ProductManager("../products/productos.json")
+
+
+const producto1={
+    title: "Producto 1",
+    description: "Este es el producto numero 1",
+    price: 1,
+    thumbnail: "no hay imagen",
+    code: 1,
+    stock: 1
+}
+
+nuevo.addProducts(producto1)

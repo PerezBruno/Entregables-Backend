@@ -1,24 +1,37 @@
 const fs = require("fs");
 
-const listaCarros1 = "../products/carrito.json";
-let listaCarros = [];
-
 class Carts {
-  constructor() {
+  constructor(path) {
+    this.path = path;
     this.products = [];
     this.id = 1;
   }
 
-  async createCart(id, products) {
-    id = this.id;
-    products = [];
+  async generateIndex(listaCarros) {
+    try {
+      if (listaCarros.length === 0) return 1;
+      return listaCarros[listaCarros.length - 1].id + 1;
+    } catch (error) {
+      console.log(
+        "🚀 ~ file: armyManager.js:17 ~ ArmyManager ~ generateIndex ~ error",
+        error
+      );
+    }
+  }
+
+  async createCart(id, products = []) {
+    let listaCarros = JSON.parse(
+      await fs.promises.readFile(this.path, "utf-8")
+    );
+    const newId = await this.generateIndex(listaCarros);
     try {
       listaCarros.push({
-        id,
+        id: newId,
         products,
       });
       this.id = this.id + 1;
-      await fs.promises.writeFile(listaCarros1, JSON.stringify(listaCarros));
+      console.log("Carrito creado con exito");
+      await fs.promises.writeFile(this.path, JSON.stringify(listaCarros));
     } catch (error) {
       console.log(
         "🚀 ~ file: carros2.js:17 ~ Carts ~ createCart ~ error",
@@ -29,8 +42,8 @@ class Carts {
 
   getCartById = async (id) => {
     try {
-      listaCarros = JSON.parse(
-        await fs.promises.readFile(listaCarros1, "utf-8")
+      let listaCarros = JSON.parse(
+        await fs.promises.readFile(this.path, "utf-8")
       );
       const resultadoId = listaCarros.find((e) => e.id === id);
       if (resultadoId) {
@@ -46,104 +59,39 @@ class Carts {
     }
   };
 
-  // updateProductInCartById = async (id, data) => {
-  //   //falta buscar el id del producto a actualizar
-  //   try {
-  //     // let cartToUpdate = listaCarros.find((e) => e.id === id);
-  //     let productoIndex = listaCarros.findIndex((e) => e.id === id);
-  //     listaCarros[productoIndex].products = {
-  //       ...data,
-  //     };
-  //     await fs.promises.writeFile(listaCarros1, JSON.stringify(listaCarros));
-  //     console.log("Producto editado correctamente");
-  //   } catch (error) {
-  //     console.log(
-  //       "🚀 ~ file: carros2.js:45 ~ Carts ~ addProductToCartById= ~ error",
-  //       error
-  //     );
-  //   }
-  // };
-
-
-  addProductInCartById = async (id, {product, quantity = 1}) => {
-
+  addProductInCartById = async (id, { product, quantity = 1 }) => {
     try {
-
-      let listaCarros = JSON.parse( await fs.promises.readFile(listaCarros1, "utf-8"));
+      let listaCarros = JSON.parse(
+        await fs.promises.readFile(this.path, "utf-8")
+      );
 
       let cartToUpdate = listaCarros.find((e) => e.id === id);
-      
-      let prod = cartToUpdate.products.find((e)=> e.product === product)
 
-      if(!prod){
-      cartToUpdate.products.push({product, quantity})
-      await fs.promises.writeFile(listaCarros1, JSON.stringify(listaCarros));
-      console.log("Producto cargado correctamente");
-      }else if (prod){
+      let prod = cartToUpdate.products.find((e) => {
+        return e.product === product;
+      });
+      if (!prod) {
+        cartToUpdate.products.push({ product, quantity });
+        await fs.promises.writeFile(this.path, JSON.stringify(listaCarros));
+        console.log("Producto cargado correctamente");
+      } else {
         let nuevaCantidad = prod.quantity + 1;
-        console.log("🚀 ~ file: Carts.js:84 ~ Carts ~ addProductInCartById= ~ nuevaCantidad", nuevaCantidad)
-        let posicion = cartToUpdate.products.indexOf(prod)
-        console.log("🚀 ~ file: Carts.js:85 ~ Carts ~ addProductInCartById= ~ posicion", posicion)
+        let posicion = cartToUpdate.products.indexOf(prod);
 
-        let edit = cartToUpdate.products.splice(posicion, 1, {product, quantity: Number(nuevaCantidad)})
-        console.log("🚀 ~ file: Carts.js:89 ~ Carts ~ addProductInCartById= ~ edit", edit)
-        await fs.promises.writeFile(listaCarros1, JSON.stringify(listaCarros));
-
-        console.log("Estamos acá!!!!!!!!!!!!!1")
-        console.log("🚀 ~ file: Carts.js:88 ~ Carts ~ addProductInCartById= ~ prod", prod)
+        let edit = cartToUpdate.products.splice(posicion, 1, {
+          product,
+          quantity: Number(nuevaCantidad),
+        });
+        console.log("Producto cargado correctamente");
+        await fs.promises.writeFile(this.path, JSON.stringify(listaCarros));
       }
     } catch (error) {
-
       console.log(
         "🚀 ~ file: carros2.js:45 ~ Carts ~ addProductToCartById= ~ error",
         error
       );
     }
   };
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
   // addProductInCartById = async (id, data) => {
   //   try {
@@ -160,48 +108,41 @@ class Carts {
   // };
 }
 
-const carritos = new Carts();
+module.exports = Carts;
 
-// carritos.createCart();
+// const carritos = new Carts("../products/carrito.json");
 
-// // console.log(listaCarros);
+// //carritos.createCart();
 
-// carritos.createCart();
+//  // console.log(listaCarros);
 
-// console.log("segundo carro", listaCarros);
+// // carritos.createCart();
 
-//carritos.getCartById(1)
+// // console.log("segundo carro", listaCarros);
 
-const producto1 = {
-  product: 125,
-  quantity: 2,
-};
-// carritos.updateProductInCartById(2, producto1);
+// //carritos.getCartById(1)
 
-const producto2 = {
-  product: 300,
-  quantity: 6,
-};
+// const producto1 = {
+//   product: 125,
+// };
 
-// carritos.updateProductInCartById(1, producto2);
+// const producto2 = {
+//   product: 300,
+// };
 
-//carritos.getCartById(2)
-const producto3 = {
-  product: 600,
-};
+// //carritos.getCartById(2)
+// const producto3 = {
+//   product: 600,
+// };
 
- //carritos.addProductInCartById(2, producto2);
- carritos.addProductInCartById(2, producto3);
+// //carritos.addProductInCartById(2, producto2);
+// //  carritos.addProductInCartById(2, producto3);
 
+// // //
 
-// //
+// // carritos.addProductInCartById(1, producto2);
 
-// carritos.addProductInCartById(1, producto2);
+// // carritos.addProductInCartById(2, producto3);
+// // carritos.addProductInCartById(2, producto2);
 
-
-
-
-// carritos.addProductInCartById(2, producto3);
-// carritos.addProductInCartById(2, producto2);
-
-//carritos.getCartById(2)
+// carritos.getCartById(1)
