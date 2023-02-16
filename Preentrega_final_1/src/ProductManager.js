@@ -1,5 +1,6 @@
 const fs = require("fs");
 
+
 class ProductManager {
   constructor(path) {
     this.path = path;
@@ -20,7 +21,7 @@ class ProductManager {
   }
 
 
-  async addProducts({ title, description, price, thumbnail, code, stock, id, status}) {
+  async addProducts({ title, description, price, thumbnail, code, stock, id, status, category}) {
     const listaProductos = JSON.parse(await fs.promises.readFile(this.path, "utf-8"))
     const newId = await this.generateIndex(listaProductos);
     id = newId;
@@ -29,7 +30,7 @@ class ProductManager {
       return product.code === code;
     });
     if (verificarCode) {
-      console.log("El valor de code ya se encuentra asignado a otro producto");
+      return {message: "el valor del CODE ya se encuentra asignado a otro producto"};
     } else if (
       title != "" &&
       description != "" &&
@@ -42,10 +43,11 @@ class ProductManager {
       thumbnail != undefined &&
       stock != undefined &&
       code != "" &&
-      code != undefined
+      code != undefined &&
+      category != "" &&
+      category != undefined
     ) {
       try {
-        console.log("producto cargado correctamente");
         listaProductos.push({
           title,
           description,
@@ -54,14 +56,16 @@ class ProductManager {
           code,
           stock,
           status,
+          category,
           id,
         });
         await fs.promises.writeFile(this.path, JSON.stringify(listaProductos));
+        return {message: "Producto cargado correctamente"};
       } catch (error) {
         console.log("Este es el error de la promesa escrituraAsync", error);
       }
     } else {
-      console.log("Todos los parametros son requeridos");
+      return {message: "todos los parametros son requeridos"};
     }
   }
 
@@ -69,7 +73,6 @@ class ProductManager {
   async getProducts() {
     try {
       const listaProductos = JSON.parse(await fs.promises.readFile(this.path, "utf-8"));
-      console.log("🚀 ~ file: ProductManager.js:154 ~ ProductManager ~ getProducts ~ listaProductos", listaProductos)
       return listaProductos;
     } catch (error) {
       console.log(error);
@@ -77,26 +80,33 @@ class ProductManager {
   }
 
   getProductById = async (id) => {
-    this.products = JSON.parse(await fs.promises.readFile(this.path, "utf-8"));
-    const resultadoId = this.products.find((e) => e.id === id);
+    let productos = await this.getProducts()//JSON.parse(await fs.promises.readFile(this.path, "utf-8"));
+    console.log("🚀 ~ file: ProductManager.js:81 ~ ProductManager ~ getProductById= ~ productos", productos)
+    let resultadoId = productos.find((e) => e.id === id);
+    console.log("🚀 ~ file: ProductManager.js:86 ~ ProductManager ~ getProductById= ~ resultadoId", resultadoId)
     if (resultadoId) {
       return resultadoId;
     } else {
-      return console.log("Product Not found");
+      return {message: "Product Not found"};
     }
   };
 
+
   updateProduct = async (id, data) => {
+    let listaProductos = await this.getProducts()
+    let resultadoId = listaProductos.find((e) => e.id === id)
+    
     try {
       let productoAActualizar = await this.getProductById(id);
-      let productoIndex = this.products.findIndex((e) => e.id === id);
-      this.products[productoIndex] = {
+      let productoIndex = listaProductos.findIndex((e) => e.id === id);
+      
+      listaProductos[productoIndex] = {
         ...productoAActualizar,
         ...data,
         id: id,
       };
-      await fs.promises.writeFile(this.path, JSON.stringify(this.products));
-      console.log("Producto editado correctamente");
+      await fs.promises.writeFile(this.path, JSON.stringify(listaProductos));
+      return {message: "Producto editado correctamente"};
     } catch (error) {
       console.log(
         "🚀 ~ file: PerezBruno-Entregable_2.js:80 ~ ProductManager ~ updateProduct= ~ error",
@@ -105,13 +115,16 @@ class ProductManager {
     }
   };
 
+
+
+
   deleteProduct = async (id) => {
     try {
-      this.products = JSON.parse(
-        await fs.promises.readFile(this.path, "utf-8")
-      );
-      this.products = this.products.filter((prod) => prod.id !== id);
-      await fs.promises.writeFile(this.path, JSON.stringify(this.products));
+      let listaProducto =
+        await this.getProducts();
+        listaProducto = listaProducto.filter((prod) => prod.id !== id);
+      await fs.promises.writeFile(this.path, JSON.stringify(listaProducto));
+      return {message: "Producto eliminado"}
     } catch (error) {
       console.log(
         "🚀 ~ file: PerezBruno-Entregable_2.js:92 ~ deleteProduct ~ error",
@@ -124,7 +137,12 @@ class ProductManager {
 
 module.exports = ProductManager;
 
-// const nuevo = new ProductManager("../products/productos.json")
+//const nuevo = new ProductManager("../products/productos.json")
+ 
+//  // console.log(nuevo.getProducts())
+
+
+  // nuevo.getProductById(5)
 
 
 // const producto1={
@@ -139,13 +157,14 @@ module.exports = ProductManager;
 // const producto2={
 //   title: "Producto 2",
 //   description: "Este es el producto numero 1",
-//   price: 1,
+//   price: 200,
 //   thumbnail: "no hay imagen",
-//   code: 2,
-//   stock: 1
+//   code: 5,
+//   stock: 1,
+//   category: "algo"
 // }
 
-// //nuevo.addProducts(producto1)
+//console.log(nuevo.addProducts(producto2))
 // //console.log(nuevo.getProducts())
 
 
@@ -154,9 +173,10 @@ module.exports = ProductManager;
 //   description: "Este es el producto numero 1",
 //   price: 1,
 //   thumbnail: "no hay imagen",
-//   code: 6,
+//   code: 200,
 //   stock: 1
 // }
 
-// nuevo.deleteProduct(2)
+// nuevo.deleteProduct(3)
 
+//nuevo.updateProduct(4, producto2)

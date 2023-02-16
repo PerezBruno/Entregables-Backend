@@ -1,5 +1,9 @@
 const fs = require("fs");
 
+const ProductManager = require("./ProductManager")
+
+const productManager = new ProductManager("./products/productos.json")
+
 class Carts {
   constructor(path) {
     this.path = path;
@@ -28,9 +32,8 @@ class Carts {
         id: newId,
         products,
       });
-      this.id = this.id + 1;
-      console.log("Carrito creado con exito");
       await fs.promises.writeFile(this.path, JSON.stringify(listaCarros));
+      return {message: "Carrito creado con exito"};
     } catch (error) {
       console.log(
         "🚀 ~ file: carros2.js:17 ~ Carts ~ createCart ~ error",
@@ -46,9 +49,9 @@ class Carts {
       );
       const resultadoId = listaCarros.find((e) => e.id === id);
       if (resultadoId) {
-        return console.log(resultadoId.products);
+        return resultadoId.products;
       } else {
-        return console.log("Not found");
+        return {message: "Not found"};
       }
     } catch (error) {
       console.log(
@@ -58,7 +61,13 @@ class Carts {
     }
   };
 
-  addProductInCartById = async (id, { product, quantity = 1 }) => {
+
+
+  addProductInCartById = async (id, product) => {
+    console.log("🚀 ~ file: Carts.js:67 ~ Carts ~ addProductInCartById= ~ product", product)
+    console.log("🚀 ~ file: Carts.js:67 ~ Carts ~ addProductInCartById= ~ id", id)
+    //let newProduct = await productManager.getProductById(product)
+    //console.log("🚀 ~ file: Carts.js:66 ~ Carts ~ addProductInCartById= ~ newProduct", newProduct)
     try {
       let listaCarros = JSON.parse(
         await fs.promises.readFile(this.path, "utf-8")
@@ -70,7 +79,7 @@ class Carts {
         return e.product === product;
       });
       if (!prod) {
-        cartToUpdate.products.push({ product, quantity });
+        cartToUpdate.products.push({ product, quantity: 1 });
         await fs.promises.writeFile(this.path, JSON.stringify(listaCarros));
         console.log("Producto cargado correctamente");
       } else {
@@ -79,7 +88,7 @@ class Carts {
 
         let edit = cartToUpdate.products.splice(posicion, 1, {
           product,
-          quantity: Number(nuevaCantidad),
+          quantity: nuevaCantidad,
         });
         console.log("Producto cargado correctamente");
         await fs.promises.writeFile(this.path, JSON.stringify(listaCarros));
@@ -109,9 +118,9 @@ class Carts {
 
 module.exports = Carts;
 
-// const carritos = new Carts("../products/carrito.json");
+//const carritos = new Carts("../products/carrito.json");
 
-// //carritos.createCart();
+//carritos.createCart();
 
 //  // console.log(listaCarros);
 
@@ -142,6 +151,6 @@ module.exports = Carts;
 // // carritos.addProductInCartById(1, producto2);
 
 // // carritos.addProductInCartById(2, producto3);
-// // carritos.addProductInCartById(2, producto2);
+//carritos.addProductInCartById(2, 1);
 
 // carritos.getCartById(1)

@@ -3,7 +3,6 @@ const { Router } = require("express");
 const ProductManager = require("../../src/ProductManager")
 
 const productManager = new ProductManager("./products/productos.json")
-console.log("🚀 ~ file: app.js:12 ~ productManager", productManager)
 
 
 const router = Router();
@@ -18,6 +17,8 @@ router.get(`/`, async (req, res) => {
      } else 
      return res.status(200).json(products);
  })
+
+ 
  
  //debe traer sólo el producto seleccionado
  router.get("/:pid", async (req, res) => {
@@ -32,19 +33,29 @@ router.get(`/`, async (req, res) => {
 
   // debe agregar nuevos productos
   router.post(`/`, async (req, res) => {
-
+    const { title, description, code, price, stock, category } = req.body;
+    const carga = await productManager.addProducts(req.body)
+    if(!carga){
+      return res.status(400).json(carga);
+    }else{
+      res.status(200).json(carga)
+    }
   });
  
 
   //toma un producto y lo actualiza
-   router.put(`/`, async (req, res) => {
+   router.put(`/:pid`, async (req, res) => {
+
+    const productoAActualizar = await productManager.updateProduct(Number(req.params.pid), req.body);
+    res.status(200).json(productoAActualizar);
 
    });
 
 
    //elimina un producto
    router.delete(`/:pid`, async (req, res) => {
-    
+    const producto = await productManager.deleteProduct(Number(req.params.pid));
+	  res.status(200).json(producto);
    });
 
  
