@@ -4,26 +4,28 @@ class ProductManager {
   constructor(path) {
     this.path = path;
     this.products = [];
-    this.id = 10;
   }
 
 
-  // async generateIndex(listaCarros) {
-  //   try {
-  //     if (listaCarros.length === 0) return 1;
-  //     return listaCarros[listaCarros.length - 1].id + 1;
-  //   } catch (error) {
-  //     console.log(
-  //       "🚀 ~ file: armyManager.js:17 ~ ArmyManager ~ generateIndex ~ error",
-  //       error
-  //     );
-  //   }
-  // }
+  async generateIndex(listaProductos) {
+    try {
+      if (listaProductos.length === 0) return 1;
+      return listaProductos[listaProductos.length - 1].id + 1;
+    } catch (error) {
+      console.log(
+        "🚀 ~ file: armyManager.js:17 ~ ArmyManager ~ generateIndex ~ error",
+        error
+      );
+    }
+  }
+
 
   async addProducts({ title, description, price, thumbnail, code, stock, id, status}) {
-    id = this.id;
+    const listaProductos = JSON.parse(await fs.promises.readFile(this.path, "utf-8"))
+    const newId = await this.generateIndex(listaProductos);
+    id = newId;
     status = true;
-    const verificarCode = this.products.some((product) => {
+    const verificarCode = listaProductos.some((product) => {
       return product.code === code;
     });
     if (verificarCode) {
@@ -44,7 +46,7 @@ class ProductManager {
     ) {
       try {
         console.log("producto cargado correctamente");
-        this.products.push({
+        listaProductos.push({
           title,
           description,
           price,
@@ -54,9 +56,7 @@ class ProductManager {
           status,
           id,
         });
-
-        this.id = this.id + 1;
-        await fs.promises.writeFile(this.path, JSON.stringify(this.products));
+        await fs.promises.writeFile(this.path, JSON.stringify(listaProductos));
       } catch (error) {
         console.log("Este es el error de la promesa escrituraAsync", error);
       }
@@ -65,9 +65,12 @@ class ProductManager {
     }
   }
 
+
   async getProducts() {
     try {
-      JSON.parse(await fs.promises.readFile(this.path, "utf-8"));
+      const listaProductos = JSON.parse(await fs.promises.readFile(this.path, "utf-8"));
+      console.log("🚀 ~ file: ProductManager.js:154 ~ ProductManager ~ getProducts ~ listaProductos", listaProductos)
+      return listaProductos;
     } catch (error) {
       console.log(error);
     }
@@ -77,9 +80,9 @@ class ProductManager {
     this.products = JSON.parse(await fs.promises.readFile(this.path, "utf-8"));
     const resultadoId = this.products.find((e) => e.id === id);
     if (resultadoId) {
-      return console.log(resultadoId);
+      return resultadoId;
     } else {
-      return console.log("Not found");
+      return console.log("Product Not found");
     }
   };
 
@@ -119,18 +122,41 @@ class ProductManager {
 }
 
 
-//module.exports = ProductManager;
+module.exports = ProductManager;
 
-const nuevo = new ProductManager("../products/productos.json")
+// const nuevo = new ProductManager("../products/productos.json")
 
 
-const producto1={
-    title: "Producto 1",
-    description: "Este es el producto numero 1",
-    price: 1,
-    thumbnail: "no hay imagen",
-    code: 1,
-    stock: 1
-}
+// const producto1={
+//     title: "Producto 1",
+//     description: "Este es el producto numero 1",
+//     price: 1,
+//     thumbnail: "no hay imagen",
+//     code: 1,
+//     stock: 1
+// }
 
-nuevo.addProducts(producto1)
+// const producto2={
+//   title: "Producto 2",
+//   description: "Este es el producto numero 1",
+//   price: 1,
+//   thumbnail: "no hay imagen",
+//   code: 2,
+//   stock: 1
+// }
+
+// //nuevo.addProducts(producto1)
+// //console.log(nuevo.getProducts())
+
+
+// const producto3={
+//   title: "Producto 2",
+//   description: "Este es el producto numero 1",
+//   price: 1,
+//   thumbnail: "no hay imagen",
+//   code: 6,
+//   stock: 1
+// }
+
+// nuevo.deleteProduct(2)
+

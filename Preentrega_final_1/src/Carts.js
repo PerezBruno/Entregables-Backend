@@ -4,7 +4,6 @@ class Carts {
   constructor(path) {
     this.path = path;
     this.products = [];
-    this.id = 1;
   }
 
   async generateIndex(listaCarros) {
