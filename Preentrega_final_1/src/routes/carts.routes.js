@@ -1,13 +1,12 @@
 const { Router } = require("express");
 
-const Carts = require("../../src/Carts")
-
+const Carts = require("../../src/Carts");
+const ProductManager = require("../../src/ProductManager");
 
 const router = Router();
 
 const carts = new Carts("./products/carrito.json")
-
-
+const productManager = new ProductManager("./products/productos.json")
 
 
 

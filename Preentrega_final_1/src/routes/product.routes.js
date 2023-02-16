@@ -18,8 +18,7 @@ router.get(`/`, async (req, res) => {
      return res.status(200).json(products);
  })
 
- 
- 
+
  //debe traer sólo el producto seleccionado
  router.get("/:pid", async (req, res) => {
     const id = Number(req.params.pid);
@@ -58,9 +57,5 @@ router.get(`/`, async (req, res) => {
 	  res.status(200).json(producto);
    });
 
- 
- 
- module.exports = router;
- 
 
- 
+module.exports = router;

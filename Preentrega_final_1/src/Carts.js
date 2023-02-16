@@ -100,57 +100,6 @@ class Carts {
       );
     }
   };
-
-  // addProductInCartById = async (id, data) => {
-  //   try {
-  //     let cartToUpdate = listaCarros.find((e) => e.id === id);
-  //     cartToUpdate.products.push(data)
-  //     await fs.promises.writeFile(listaCarros1, JSON.stringify(listaCarros));
-  //     console.log("Producto cargado correctamente");
-  //   } catch (error) {
-  //     console.log(
-  //       "🚀 ~ file: carros2.js:45 ~ Carts ~ addProductToCartById= ~ error",
-  //       error
-  //     );
-  //   }
-  // };
 }
 
 module.exports = Carts;
-
-//const carritos = new Carts("../products/carrito.json");
-
-//carritos.createCart();
-
-//  // console.log(listaCarros);
-
-// // carritos.createCart();
-
-// // console.log("segundo carro", listaCarros);
-
-// //carritos.getCartById(1)
-
-// const producto1 = {
-//   product: 125,
-// };
-
-// const producto2 = {
-//   product: 300,
-// };
-
-// //carritos.getCartById(2)
-// const producto3 = {
-//   product: 600,
-// };
-
-// //carritos.addProductInCartById(2, producto2);
-// //  carritos.addProductInCartById(2, producto3);
-
-// // //
-
-// // carritos.addProductInCartById(1, producto2);
-
-// // carritos.addProductInCartById(2, producto3);
-//carritos.addProductInCartById(2, 1);
-
-// carritos.getCartById(1)

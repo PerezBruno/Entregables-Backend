@@ -35,12 +35,10 @@ class ProductManager {
       title != "" &&
       description != "" &&
       price != "" &&
-      thumbnail != "" &&
       stock != "" &&
       title != undefined &&
       description != undefined &&
       price != undefined &&
-      thumbnail != undefined &&
       stock != undefined &&
       code != "" &&
       code != undefined &&
@@ -81,9 +79,7 @@ class ProductManager {
 
   getProductById = async (id) => {
     let productos = await this.getProducts()//JSON.parse(await fs.promises.readFile(this.path, "utf-8"));
-    console.log("🚀 ~ file: ProductManager.js:81 ~ ProductManager ~ getProductById= ~ productos", productos)
     let resultadoId = productos.find((e) => e.id === id);
-    console.log("🚀 ~ file: ProductManager.js:86 ~ ProductManager ~ getProductById= ~ resultadoId", resultadoId)
     if (resultadoId) {
       return resultadoId;
     } else {
@@ -136,47 +132,3 @@ class ProductManager {
 
 
 module.exports = ProductManager;
-
-//const nuevo = new ProductManager("../products/productos.json")
- 
-//  // console.log(nuevo.getProducts())
-
-
-  // nuevo.getProductById(5)
-
-
-// const producto1={
-//     title: "Producto 1",
-//     description: "Este es el producto numero 1",
-//     price: 1,
-//     thumbnail: "no hay imagen",
-//     code: 1,
-//     stock: 1
-// }
-
-// const producto2={
-//   title: "Producto 2",
-//   description: "Este es el producto numero 1",
-//   price: 200,
-//   thumbnail: "no hay imagen",
-//   code: 5,
-//   stock: 1,
-//   category: "algo"
-// }
-
-//console.log(nuevo.addProducts(producto2))
-// //console.log(nuevo.getProducts())
-
-
-// const producto3={
-//   title: "Producto 2",
-//   description: "Este es el producto numero 1",
-//   price: 1,
-//   thumbnail: "no hay imagen",
-//   code: 200,
-//   stock: 1
-// }
-
-// nuevo.deleteProduct(3)
-
-//nuevo.updateProduct(4, producto2)
