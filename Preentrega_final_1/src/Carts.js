@@ -1,8 +1,8 @@
 const fs = require("fs");
 
-const ProductManager = require("./ProductManager")
+const ProductManager = require("./ProductManager");
 
-const productManager = new ProductManager("./products/productos.json")
+const productManager = new ProductManager("./products/productos.json");
 
 class Carts {
   constructor(path) {
@@ -33,7 +33,7 @@ class Carts {
         products,
       });
       await fs.promises.writeFile(this.path, JSON.stringify(listaCarros));
-      return {message: "Carrito creado con exito"};
+      return { message: "Carrito creado con exito" };
     } catch (error) {
       console.log(
         "🚀 ~ file: carros2.js:17 ~ Carts ~ createCart ~ error",
@@ -42,16 +42,46 @@ class Carts {
     }
   }
 
+  // getCartById = async (id) => {
+  //   try {
+  //     let listaCarros = JSON.parse(
+  //       await fs.promises.readFile(this.path, "utf-8")
+  //     );
+  //     const resultadoId = listaCarros.find((e) => e.id === id);
+  //     if (resultadoId) {
+  //       return resultadoId.products;
+  //     } else {
+  //       return {message: "Not found"};
+  //     }
+  //   } catch (error) {
+  //     console.log(
+  //       "🚀 ~ file: carros2.js:31 ~ Carts ~ getCartById= ~ error",
+  //       error
+  //     );
+  //   }
+  // };
+
   getCartById = async (id) => {
     try {
       let listaCarros = JSON.parse(
         await fs.promises.readFile(this.path, "utf-8")
       );
       const resultadoId = listaCarros.find((e) => e.id === id);
+      console.log(
+        "🚀 ~ file: Carts.js:51 ~ Carts ~ getCartById= ~ resultadoId",
+        resultadoId
+      );
+      const lista = resultadoId.products;
+      let nuevaLista = lista.map((registro) => registro.product)
+      console.log(
+        "🚀 ~ file: Carts.js:78 ~ Carts ~ getCartById= ~ nuevaLista",
+        nuevaLista
+      );
+
       if (resultadoId) {
         return resultadoId.products;
       } else {
-        return {message: "Not found"};
+        return { message: "Not found" };
       }
     } catch (error) {
       console.log(
@@ -61,11 +91,15 @@ class Carts {
     }
   };
 
-
-
   addProductInCartById = async (id, product) => {
-    console.log("🚀 ~ file: Carts.js:67 ~ Carts ~ addProductInCartById= ~ product", product)
-    console.log("🚀 ~ file: Carts.js:67 ~ Carts ~ addProductInCartById= ~ id", id)
+    console.log(
+      "🚀 ~ file: Carts.js:67 ~ Carts ~ addProductInCartById= ~ product",
+      product
+    );
+    console.log(
+      "🚀 ~ file: Carts.js:67 ~ Carts ~ addProductInCartById= ~ id",
+      id
+    );
     //let newProduct = await productManager.getProductById(product)
     //console.log("🚀 ~ file: Carts.js:66 ~ Carts ~ addProductInCartById= ~ newProduct", newProduct)
     try {
@@ -103,3 +137,10 @@ class Carts {
 }
 
 module.exports = Carts;
+
+const nuevo = new Carts("../products/carrito.json");
+
+const otroNuevo = new ProductManager("../products/Productos.json");
+
+//otroNuevo.getProducts()
+nuevo.getCartById(1);

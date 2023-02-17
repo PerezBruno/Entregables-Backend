@@ -71,7 +71,7 @@ class ProductManager {
   async getProducts() {
     try {
       const listaProductos = JSON.parse(await fs.promises.readFile(this.path, "utf-8"));
-      return listaProductos;
+      return console.log(listaProductos);
     } catch (error) {
       console.log(error);
     }
