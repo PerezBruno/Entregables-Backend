@@ -71,19 +71,24 @@ class ProductManager {
   async getProducts() {
     try {
       const listaProductos = JSON.parse(await fs.promises.readFile(this.path, "utf-8"));
-      return console.log(listaProductos);
+      return listaProductos;
     } catch (error) {
       console.log(error);
     }
   }
 
   getProductById = async (id) => {
-    let productos = await this.getProducts()//JSON.parse(await fs.promises.readFile(this.path, "utf-8"));
-    let resultadoId = productos.find((e) => e.id === id);
-    if (resultadoId) {
-      return resultadoId;
-    } else {
-      return {message: "Product Not found"};
+    try {
+      
+      let productos = await this.getProducts()//JSON.parse(await fs.promises.readFile(this.path, "utf-8"));
+      let resultadoId = productos.find((e) => e.id === id);
+      if (resultadoId) {
+        return resultadoId;
+      } else {
+        return {message: "Product Not found"};
+      }
+    } catch (error) {
+      console.log("🚀 ~ file: ProductManager.js:91 ~ ProductManager ~ getProductById= ~ error", error)
     }
   };
 
@@ -104,10 +109,8 @@ class ProductManager {
       await fs.promises.writeFile(this.path, JSON.stringify(listaProductos));
       return {message: "Producto editado correctamente"};
     } catch (error) {
-      console.log(
-        "🚀 ~ file: PerezBruno-Entregable_2.js:80 ~ ProductManager ~ updateProduct= ~ error",
-        error
-      );
+    console.log("🚀 ~ file: ProductManager.js:112 ~ ProductManager ~ updateProduct= ~ error", error)
+
     }
   };
 
@@ -122,10 +125,8 @@ class ProductManager {
       await fs.promises.writeFile(this.path, JSON.stringify(listaProducto));
       return {message: "Producto eliminado"}
     } catch (error) {
-      console.log(
-        "🚀 ~ file: PerezBruno-Entregable_2.js:92 ~ deleteProduct ~ error",
-        error
-      );
+    console.log("🚀 ~ file: ProductManager.js:128 ~ ProductManager ~ deleteProduct ~ error", error)
+
     }
   };
 }

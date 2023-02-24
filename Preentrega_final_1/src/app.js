@@ -8,14 +8,23 @@ const cartsRoutes = require("./routes/carts.routes")
 
 const handlebars = require("express-handlebars")
 
+const { Server } = require("socket.io")
 
-const BASE_PREFIX = "api";
-
-
-const PORT = 8080;
+const ProductManager = require ("./ProductManager")
 
 const app = express();
 
+const PORT = 8080;
+
+const httpServer = app.listen(PORT, () => {
+  console.log(`API corriendo en el puerto ${PORT}`);
+});
+const socketServer = new Server(httpServer);
+
+const productManager = new ProductManager("../products/productos.json")
+
+
+const BASE_PREFIX = "api";
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -30,9 +39,18 @@ app.set("views", path.join(`${__dirname}/views`));
 app.set("view engine", "handlebars");
 
 
-  app.listen(PORT, () => {
-    console.log(`API corriendo en el puerto ${PORT}`);
-  });
+app.get('/realtimeproducts', async (req, res) => res.status(200).render('realTimeProducts'));
+
+socketServer.on('connection', async socket => {
+	console.log('Nuevo cliente conectado');
+
+	const products = await productManager.getProducts();
+	socket.emit('products', products);
+
+	socket.on('addProd', async prod => await productManager.addProducts(prod));
+
+	socket.on('delProd', async id => await productManager.deleteProduct(id));
+});
   
 
 //Configurar e instalar handlebars - listo
