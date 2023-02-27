@@ -3,10 +3,12 @@
     {{#each products}}
         <h2>{{this.title}}</h2>
         <p><b>Descripción:</b> {{this.description}}</p>
-        <p><b>Precio: $</b>{{this.price}}</p>
+        <p><b>Precio: $ </b>{{this.price}}</p>
         <p><b>Código:</b> {{this.code}}</p>
         <p><b>Stock:</b> {{this.stock}}</p>
     {{/each}}
 {{else}}
-    <strong>Qué escribo??</strong>
+    <strong>No se ha encontrado ningun producto</strong>
 {{/if}}
+
+<script src="/js/home.js"></script>

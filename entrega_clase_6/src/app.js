@@ -2,56 +2,90 @@ const express = require("express");
 
 const path = require ("path")
 
+const ProductManager = require("./ProductManager")
+
+const { Server } = require("socket.io")
+
+
 const productRoutes = require("./routes/product.routes")
 
 const cartsRoutes = require("./routes/carts.routes")
 
 const handlebars = require("express-handlebars")
 
-const { Server } = require("socket.io")
-
-const ProductManager = require ("./ProductManager")
-
-const app = express();
-
-const PORT = 8080;
-
-const httpServer = app.listen(PORT, () => {
-  console.log(`API corriendo en el puerto ${PORT}`);
-});
-const socketServer = new Server(httpServer);
-
-const productManager = new ProductManager("../products/productos.json")
+const productManager = new ProductManager("./products/productos.json");
 
 
 const BASE_PREFIX = "api";
 
+
+const PORT = 8080;
+
+const app = express();
+
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
 
 
 app.use(`/${BASE_PREFIX}/products` , productRoutes);
 app.use(`/${BASE_PREFIX}/carts` , cartsRoutes);
 
 //configuración de handlebars
+
 app.engine("handlebars", handlebars.engine());
 app.set("views", path.join(`${__dirname}/views`));
 app.set("view engine", "handlebars");
 
+app.use(express.static(__dirname + '/public'))
 
-app.get('/realtimeproducts', async (req, res) => res.status(200).render('realTimeProducts'));
 
-socketServer.on('connection', async socket => {
-	console.log('Nuevo cliente conectado');
 
-	const products = await productManager.getProducts();
-	socket.emit('products', products);
+let listaProducts = [];
+const cargarProd = async () => {
+  try {
+    listaProducts = await productManager.getProducts();
+  } catch (error) {
+    console.error("Error: not product found");
+  }
+};
+cargarProd();
+//rutas
+app.get("/realtimeproducts", async (req, res) =>
+  res.status(200).render("realTimeProducts")
+);
+
+app.get("/", async (req, res) => {
+  res.status(200).render("home", { products: listaProducts });
+});
+
+// configurando Socket.io
+
+const server = app.listen(PORT, ()=>{
+  console.log(`Escuchando en puerto ${PORT}`)
+})
+
+const io = new Server(server);
+
+
+io.on("connection", async (socket) => {
+//  console.log("🚀 ~ file: app.js:73 ~ io.on ~ socket:", socket)
+  console.log("conectado")
+
+ // const products = await productManager.getProducts();
+	socket.emit('products', listaProducts);
 
 	socket.on('addProd', async prod => await productManager.addProducts(prod));
 
-	socket.on('delProd', async id => await productManager.deleteProduct(id));
-});
-  
+	socket.on('delProd', async id => await productManager.deleteProduct(id) && console.log(id));
+  	
+	})
+
+
+
+
+
 
 //Configurar e instalar handlebars - listo
 

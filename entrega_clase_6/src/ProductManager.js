@@ -119,6 +119,7 @@ class ProductManager {
 
   deleteProduct = async (id) => {
     try {
+      console.log("intentando eliminar producto")
       let listaProducto =
         await this.getProducts();
         listaProducto = listaProducto.filter((prod) => prod.id !== id);
